@@ -3,23 +3,24 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net/http"
+	"os"
+
 	"github.com/pieterlexis/gh-rocketchat/config"
 	"github.com/pieterlexis/gh-rocketchat/processor"
 	"github.com/pieterlexis/gh-rocketchat/version"
-	"net/http"
-	"os"
 
 	"github.com/pieterlexis/gh-rocketchat/receiver"
 	log "github.com/sirupsen/logrus"
 )
 
-func indexOf(element string, data []string) (int) {
+func indexOf(element string, data []string) int {
 	for k, v := range data {
 		if element == v {
 			return k
 		}
 	}
-	return -1    //not found.
+	return -1 //not found.
 }
 
 var UsagePre = fmt.Sprintf(`GitHub to Rocket.Chat Webhook Translator [%s]
@@ -42,7 +43,6 @@ func usage() {
 	fmt.Fprint(os.Stderr, "Flags:\n")
 	flag.PrintDefaults()
 }
-
 
 func main() {
 	formatter := log.TextFormatter{

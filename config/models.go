@@ -9,5 +9,5 @@ type Hook struct {
 
 type Config struct {
 	ListenAddress string `yaml:"listenaddress"`
-	Hooks []Hook `yaml:"hooks"`
+	Hooks         []Hook `yaml:"hooks"`
 }
