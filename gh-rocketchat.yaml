@@ -1,0 +1,16 @@
+# This is the address that gh-rocketchat listens on locally
+listenaddress: 127.0.0.1:8000
+
+# This key specifies all the webhooks.
+# Each webhook must have a unique name and unique endpoint, it must have a destination and optionally a secret to
+# authenticate incoming webhooks
+# e.g.
+#
+#    hooks:
+#      - name: myHook          # Must be unique between all hooks
+#        endpoint: /hook1      # Must also be unique. This is the URL endpoint where GitHub delivers the hook.
+#                              # In this case it would be machine.example.com/hook1
+#        secret: s3cr3t        # The shared secret for GitHub
+#        destination: https://rocketchat.example.com/hooks/SOMESUPERLONGSTRING
+#                              # Where to deliver the transformed webhooks
+hooks: []
