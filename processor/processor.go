@@ -69,7 +69,7 @@ func (p *processor) createRocketChatWebhookAndSend(username string, text string,
 		rcPayload.Attachments = attachments
 	}
 
-	log.Debugf("%s Putting this rcPayload in rcPayloadChan: %+v", p.logPrefix, rcPayload)
+	log.Tracef("%s Putting this rcPayload in rcPayloadChan: %+v", p.logPrefix, rcPayload)
 	p.rcPayloadChan <- rcPayload
 }
 
@@ -106,7 +106,7 @@ func (p *processor) executeTemplate(template *template.Template, obj interface{}
 
 	if err != nil {
 		log.Warnf("%s Could not execute template: %v", p.logPrefix, err)
-		log.Debugf("%s Full payload: %+v", p.logPrefix, obj)
+		log.Tracef("%s Full payload: %+v", p.logPrefix, obj)
 		return "", err
 	}
 

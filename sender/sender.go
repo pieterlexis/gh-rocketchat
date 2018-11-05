@@ -36,10 +36,10 @@ func (s *sender) run() {
 	for {
 		select {
 		case msg := <-s.rcPayloadChan:
-			log.Debugf("%s received payload on rcPayloadChan: %+v", s.logPrefix, msg)
+			log.Tracef("%s received payload on rcPayloadChan: %+v", s.logPrefix, msg)
 			go s.sendToWebhook(msg)
 		case <-delayedTicker.C:
-			log.Debugf("%s delayTicker ticked", s.logPrefix)
+			log.Tracef("%s delayTicker ticked", s.logPrefix)
 			go s.handleDelayedMsgs()
 		}
 	}
@@ -52,8 +52,8 @@ func (s *sender) sendToWebhook(payload models.RocketChatWebhookPayload) {
 		log.Debugf("%s Full payload value: %+v", s.logPrefix, payload)
 	}
 
-	log.Debugf("%s Sending webhook", s.logPrefix)
-	log.Debugf("%s with this content: %s", s.logPrefix, jsonValue)
+	log.Debugf("%s Sending webhook to %s", s.logPrefix, s.destination)
+	log.Tracef("%s with this content: %s", s.logPrefix, jsonValue)
 
 	_, err = http.Post(s.destination, "application/json", bytes.NewBuffer(jsonValue))
 	if err != nil {
@@ -61,7 +61,6 @@ func (s *sender) sendToWebhook(payload models.RocketChatWebhookPayload) {
 		// TODO Handle unreachable errors by pushing the message with info to the delayedMsg chan
 		return
 	}
-	log.Debugf("%s Success!", s.logPrefix)
 }
 
 func (s *sender) handleDelayedMsgs() {

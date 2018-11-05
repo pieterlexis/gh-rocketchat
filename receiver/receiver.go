@@ -2,10 +2,9 @@ package receiver
 
 import (
 	"fmt"
-	"net/http"
-
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/go-playground/webhooks.v5/github"
+	"net/http"
 )
 
 type receiver struct {
@@ -34,12 +33,13 @@ func (r *receiver) Handle(ghPayloadChan chan interface{}) http.Handler {
 
 		if err != nil {
 			if err == github.ErrEventNotFound {
-				log.Debugf("Got an event we don't process: %+v", ghPayload)
+				log.Debugf("%s Got an event we don't process: %T", r.logPrefix, ghPayload)
 				return
 			}
 		}
 
-		log.Debugf("Had event: %+v", ghPayload)
+		log.Debugf("%s Had event payload: %T", r.logPrefix, ghPayload)
+		log.Tracef("%s Event content: %+v", r.logPrefix, ghPayload)
 
 		ghPayloadChan <- ghPayload
 	})

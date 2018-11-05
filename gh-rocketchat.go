@@ -31,11 +31,13 @@ to messages that can be displayed by rocket.chat.
 
 var configFile string
 var debug bool
+var trace bool
 
 func init() {
 	flag.StringVar(&configFile, "config", "gh-rocketchat.yaml",
 		"Configuration file to load")
 	flag.BoolVar(&debug, "debug", false, "Enable debug-level logging")
+	flag.BoolVar(&debug, "trace", false, "Enable trace-level logging")
 }
 
 func usage() {
@@ -54,6 +56,9 @@ func main() {
 	flag.Parse()
 	if debug {
 		log.SetLevel(log.DebugLevel)
+	}
+	if trace {
+		log.SetLevel(log.TraceLevel)
 	}
 
 	log.Infof("Starting up!")
