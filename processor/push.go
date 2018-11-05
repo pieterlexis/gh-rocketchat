@@ -8,8 +8,7 @@ import (
 )
 
 const pushTemplate string = `[{{ .Sender.Login }}]({{ .Sender.HTMLURL }}) {{ if .Forced }}*force* {{ end }}pushed {{ len .Commits }} commits to [{{ .Ref }}]({{ .Compare }}) in [{{ .Repository.FullName }}]({{ .Repository.URL }})`
-
-const pushCommitTemplate string = `[{{ .ID }}]({{ .URL }}): `
+const pushCommitTemplate string = `[{{ StringSlice .ID 0 8 }}]({{ .URL }}): {{ FirstLine .Message }} ({{ .Author.Name }})`
 
 func (p *processor) handlePush(push github.PushPayload) {
 	text, err := p.makeAndExecuteTemplate("push", pushTemplate, push)
@@ -17,23 +16,27 @@ func (p *processor) handlePush(push github.PushPayload) {
 		return
 	}
 
-	var commits = make([]models.RocketChatWebhookField, len(push.Commits))
-
+	var commits []string
 	for _, commit := range push.Commits {
-		msg := strings.Split(commit.Message, "\n")[0]
-		prefix, _ := p.makeAndExecuteTemplate("pushCommit", pushCommitTemplate, commit)
-		commits = append(commits, models.RocketChatWebhookField{
-			Title: commit.Author.Name,
-			Value: prefix + msg,
-		})
+		msg, _ := p.makeAndExecuteTemplate("pushCommitPrefix", pushCommitTemplate, commit)
+		commits = append(commits, msg)
 	}
+
+	var commitsField = models.RocketChatWebhookField{
+		Title: "commits",
+		Value: strings.Join(commits, "\n"),
+	}
+
 	attachments := []models.RocketChatWebhookAttachment{{
-		Title:  "Commits: ",
-		Fields: commits,
+		Title:     "Details",
+		Collapsed: true,
+		Fields: []models.RocketChatWebhookField{
+			commitsField,
+		},
 	}}
 
 	p.createRocketChatWebhookAndSend(
-		push.Sender.Login,
+		push.Repository.FullName,
 		text,
 		push.Sender.AvatarURL,
 		attachments)

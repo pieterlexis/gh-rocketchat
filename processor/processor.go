@@ -85,6 +85,12 @@ func (p *processor) makeAndExecuteTemplate(name string, content string, obj inte
 func (p *processor) newTemplate(name string, content string) (*template.Template, error) {
 	t, err := template.New(name).Funcs(template.FuncMap{
 		"StringsJoin": strings.Join,
+		"StringSlice": func(s string, i, j int) string {
+			return s[i:j]
+		},
+		"FirstLine": func(s string) string {
+			return strings.Split(s, "\n")[0]
+		},
 	}).Parse(content)
 	if err != nil {
 		log.Warnf("%s Unable to parse template: %v", p.logPrefix, err)
