@@ -25,8 +25,20 @@ const prAssignedTemplate = `[{{ .Sender.Login }}]({{ .Sender.HTMLURL }})
 		[{{ $assignee.Login }}]({{ $assignee.HTMLURL }})
 	{{- end }} to
 {{- end }} pull request`
-const prLabelTemplate = `[{{ .Sender.Login }}]({{ .Sender.HTMLURL }}) {{ if .Action == "labeled" }} added a label to {{ else }} removed a label from {{ end }}pull request`
-const prReviewRequestTemplate = `[{{ .Sender.Login }}]({{ .Sender.HTMLURL }}) {{ if .Action == "review_requested" }} requested a review for {{ else }} removed a review request from {{ end }}pull request`
+const prLabelTemplate = `[{{ .Sender.Login }}]({{ .Sender.HTMLURL }})
+{{- if eq .Action "labeled" }}
+	{{- " added a label to" }}
+{{- else }}
+	{{ " removed a label from" }}
+{{- end }} pull request.
+{{- if .PullRequest.Labels }}
+	{{ "All labels: " }}
+	{{- range $index, $label := .PullRequest.Labels }}
+		{{- if $index }}, {{ end -}}
+		{{ $assignee.Name }}
+	{{- end }}
+{{- end }}`
+const prReviewRequestTemplate = `[{{ .Sender.Login }}]({{ .Sender.HTMLURL }}) {{ if eq .Action "review_requested" }} requested a review for {{ else }} removed a review request from {{ end }}pull request`
 
 const prNumberTitleTemplate = `#{{ .Number }} - {{ .PullRequest.Title }}`
 
