@@ -35,10 +35,17 @@ const prLabelTemplate = `[{{ .Sender.Login }}]({{ .Sender.HTMLURL }})
 	{{ "All labels: " }}
 	{{- range $index, $label := .PullRequest.Labels }}
 		{{- if $index }}, {{ end -}}
-		{{ $assignee.Name }}
+		{{ $label.Name }}
 	{{- end }}
 {{- end }}`
-const prReviewRequestTemplate = `[{{ .Sender.Login }}]({{ .Sender.HTMLURL }}) {{ if eq .Action "review_requested" }} requested a review for {{ else }} removed a review request from {{ end }}pull request`
+const prReviewRequestTemplate = `[{{ .Sender.Login }}]({{ .Sender.HTMLURL }}){{ if eq .Action "review_requested" }} requested a review for {{ else }} removed a review request from {{ end }}pull request.
+{{- if .PullRequest.RequestedReviewers }}
+	{{ "Requested reviewers for this pull request: " }}
+	{{- range $index, $reviewer := .PullRequest.RequestedReviewers }}
+		{{- if $index }}, {{ end -}}
+		[{{ $reviewer.Login }}]({{ $reviewer.HTMLURL }})
+	{{- end }}
+{{- end }}`
 
 const prNumberTitleTemplate = `#{{ .Number }} - {{ .PullRequest.Title }}`
 
