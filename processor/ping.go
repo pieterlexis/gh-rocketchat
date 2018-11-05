@@ -5,7 +5,7 @@ import (
 	"gopkg.in/go-playground/webhooks.v5/github"
 )
 
-const pingTemplate string = `:thumbsup: Received PING with ID '{{ .HookID }}' successfully!"`
+const pingTemplate string = `:thumbsup: Received PING with ID '{{ .HookID }}' successfully!`
 
 func (p *processor) handlePing(ping github.PingPayload) {
 	text, err := p.makeAndExecuteTemplate("ping", pingTemplate, ping)
