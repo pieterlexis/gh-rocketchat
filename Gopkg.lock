@@ -37,12 +37,12 @@
   revision = "9b800f95dbbc54abff0acf7ee32d88ba4e328c89"
 
 [[projects]]
-  digest = "1:d208f3917f9cf796f35b31c8cffe479131d451abafeca4e588091d7bd24d3ed2"
+  digest = "1:717ae725b36550a31f5060b4b549063b8a9cc72e55119ea051b59db6101f490b"
   name = "gopkg.in/go-playground/webhooks.v5"
   packages = ["github"]
   pruneopts = "UT"
-  revision = "24279ccb4be8a1e45e37c98e6b6343d3af5d35c6"
-  version = "v5.1.1"
+  revision = "dfc330f6eb49e2cf5b18ca40df7229a83f36e137"
+  version = "v5.2.0"
 
 [[projects]]
   digest = "1:342378ac4dcb378a5448dd723f0784ae519383532f5e70ade24132c4c8693202"

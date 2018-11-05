@@ -1,5 +1,9 @@
 package models
 
+/* See https://rocket.chat/docs/developer-guides/rest-api/chat/postmessage/
+
+ */
+
 type RocketChatWebhookField struct {
 	Title string `json:"title"`
 	Value string `json:"value"`
@@ -7,6 +11,7 @@ type RocketChatWebhookField struct {
 }
 
 type RocketChatWebhookAttachment struct {
+	Collapsed  bool                     `json:"collapsed"`
 	Color      string                   `json:"color"`
 	AuthorName string                   `json:"author_name"`
 	AuthorLink string                   `json:"author_link"`

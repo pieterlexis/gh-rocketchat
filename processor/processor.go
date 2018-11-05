@@ -3,6 +3,7 @@ package processor
 import (
 	"bytes"
 	"fmt"
+	"strings"
 	"text/template"
 
 	"github.com/pieterlexis/gh-rocketchat/models"
@@ -35,13 +36,14 @@ func (p *processor) run() {
 	for {
 		select {
 		case payload := <-p.ghPayloadChan:
+			// TODO switch (back) to using goroutines. These were removed because the parameter was too large
 			switch payload.(type) {
 			case github.PingPayload:
-				go p.handlePing(payload.(github.PingPayload))
+				p.handlePing(payload.(github.PingPayload))
 			case github.PullRequestPayload:
-				go p.handlePullRequest(payload.(github.PullRequestPayload))
+				p.handlePullRequest(payload.(github.PullRequestPayload))
 			case github.PushPayload:
-				go p.handlePush(payload.(github.PushPayload))
+				p.handlePush(payload.(github.PushPayload))
 			default:
 				log.Warnf("%s Had an unexpected payload type: %T", p.logPrefix, payload)
 			}
@@ -81,7 +83,9 @@ func (p *processor) makeAndExecuteTemplate(name string, content string, obj inte
 }
 
 func (p *processor) newTemplate(name string, content string) (*template.Template, error) {
-	t, err := template.New(name).Parse(content)
+	t, err := template.New(name).Funcs(template.FuncMap{
+		"StringsJoin": strings.Join,
+	}).Parse(content)
 	if err != nil {
 		log.Warnf("%s Unable to parse template: %v", p.logPrefix, err)
 		log.Debugf("%s Full template: %s", p.logPrefix, content)
