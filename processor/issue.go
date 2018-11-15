@@ -25,6 +25,20 @@ const issueLabelTemplate = `[{{ .Sender.Login }}]({{ .Sender.HTMLURL }})
 
 const issueNumberTitleTemplate = `#{{ .Issue.Number }} - {{ .Issue.Title }}`
 
+const issueMilestonedTemplate = `[{{ .Sender.Login }}]({{ .Sender.HTMLURL }})
+{{- if eq .Action "milestoned" }}
+	{{- " added " }}
+{{- else }}
+	{{ " removed " }}
+{{- end }}
+{{- "the milestone " }}
+{{- .Issue.Milestone.Title }}
+{{- if eq .Action "milestoned" }}
+{{- " to " }}
+{{- else }}
+{{ " from " }}
+{{- end }}issue`
+
 func (p *processor) getIssueBody(pr github.IssuesPayload) models.RocketChatWebhookField {
 	return models.RocketChatWebhookField{
 		Title: "body",
@@ -118,6 +132,8 @@ func (p *processor) handleIssue(issue github.IssuesPayload) {
 		text, err = p.makeAndExecuteTemplate("issue_labeled", issueLabelTemplate, issue)
 	case "opened", "reopened", "closed":
 		text, err = p.makeAndExecuteTemplate("issue_opened", issueGenericTemplate, issue)
+	case "milestoned", "unmilestoned":
+		text, err = p.makeAndExecuteTemplate("issue_milestoned", issueMilestonedTemplate, issue)
 	default:
 		logrus.Infof("%s Unhandled Issue action '%s'", p.logPrefix, issue.Action)
 		return
