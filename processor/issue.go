@@ -23,7 +23,7 @@ const issueLabelTemplate = `[{{ .Sender.Login }}]({{ .Sender.HTMLURL }})
 {{ "from " }}
 {{- end }} issue`
 
-const issueNumberTitleTemplate = `#{{ .Issue.Number }} - {{ .Issue.Title }}`
+const issueNumberTitleTemplate = `#{{ .Number }} - {{ .Title }}`
 
 const issueMilestonedTemplate = `[{{ .Sender.Login }}]({{ .Sender.HTMLURL }})
 {{- if eq .Action "milestoned" }}
@@ -39,17 +39,17 @@ const issueMilestonedTemplate = `[{{ .Sender.Login }}]({{ .Sender.HTMLURL }})
 {{ " from " }}
 {{- end }}issue`
 
-func (p *processor) getIssueBody(pr github.IssuesPayload) models.RocketChatWebhookField {
+func (p *processor) getIssueBody(issue github.Issue) models.RocketChatWebhookField {
 	return models.RocketChatWebhookField{
 		Title: "body",
-		Value: pr.Issue.Body,
-		// Short: len(pr.PullRequest.Body) >= 512,
+		Value: issue.Body,
+		// Short: len(issue.PullRequest.Body) >= 512,
 	}
 }
 
-func (p *processor) getIssueLabels(issue github.IssuesPayload) models.RocketChatWebhookField {
+func (p *processor) getIssueLabels(issue github.Issue) models.RocketChatWebhookField {
 	var labels []string
-	for _, l := range issue.Issue.Labels {
+	for _, l := range issue.Labels {
 		labels = append(labels, l.Name)
 	}
 	return models.RocketChatWebhookField{
@@ -59,9 +59,9 @@ func (p *processor) getIssueLabels(issue github.IssuesPayload) models.RocketChat
 	}
 }
 
-func (p *processor) getIssueAssignees(issue github.IssuesPayload) models.RocketChatWebhookField {
+func (p *processor) getIssueAssignees(issue github.Issue) models.RocketChatWebhookField {
 	var assignees []string
-	for _, a := range issue.Issue.Assignees {
+	for _, a := range issue.Assignees {
 		assignee, _ := p.makeAndExecuteTemplate("issue-assignees", "[{{ .Login }}]({{ .HTMLURL }})", a)
 		assignees = append(assignees, assignee)
 	}
@@ -71,15 +71,15 @@ func (p *processor) getIssueAssignees(issue github.IssuesPayload) models.RocketC
 	}
 }
 
-func (p *processor) getIssueMilestone(issue github.IssuesPayload) models.RocketChatWebhookField {
-	milestone, _ := p.makeAndExecuteTemplate("issue-milestone", "[{{ .Issue.Milestone.Title }}]({{ .Issue.Milestone.HTMLURL }})", issue)
+func (p *processor) getIssueMilestone(issue github.Issue) models.RocketChatWebhookField {
+	milestone, _ := p.makeAndExecuteTemplate("issue-milestone", "[{{ .Milestone.Title }}]({{ .Milestone.HTMLURL }})", issue)
 	return models.RocketChatWebhookField{
 		Title: "milestone",
 		Value: milestone,
 	}
 }
 
-func (p *processor) makeIssueAttachments(issue github.IssuesPayload) ([]models.RocketChatWebhookAttachment, error) {
+func (p *processor) makeIssueAttachments(issue github.Issue) ([]models.RocketChatWebhookAttachment, error) {
 	// TODO roll up with makePullRequestAttachments
 
 	var attachments []models.RocketChatWebhookAttachment
@@ -92,18 +92,18 @@ func (p *processor) makeIssueAttachments(issue github.IssuesPayload) ([]models.R
 
 	fields = append(fields, models.RocketChatWebhookField{
 		Title: "opened",
-		Value: issue.Issue.User.Login,
+		Value: issue.User.Login,
 	})
 
-	if len(issue.Issue.Labels) > 0 {
+	if len(issue.Labels) > 0 {
 		fields = append(fields, p.getIssueLabels(issue))
 	}
 
-	if len(issue.Issue.Assignees) > 0 {
+	if issue.Assignees != nil {
 		fields = append(fields, p.getIssueAssignees(issue))
 	}
 
-	if issue.Issue.Milestone != nil {
+	if issue.Milestone != nil {
 		fields = append(fields, p.getIssueMilestone(issue))
 	}
 
@@ -114,7 +114,7 @@ func (p *processor) makeIssueAttachments(issue github.IssuesPayload) ([]models.R
 		Collapsed:  true,
 		AuthorIcon: svgInlinePrefix + ghIssueSVG,
 		AuthorName: issueTitleAndName,
-		AuthorLink: issue.Issue.HTMLURL,
+		AuthorLink: issue.HTMLURL,
 		Fields:     fields,
 	})
 
@@ -143,7 +143,7 @@ func (p *processor) handleIssue(issue github.IssuesPayload) {
 		return
 	}
 
-	attachments, err := p.makeIssueAttachments(issue)
+	attachments, err := p.makeIssueAttachments(*issue.Issue)
 	if err != nil {
 		return
 	}

@@ -39,5 +39,5 @@
 
 [[constraint]]
   name = "gopkg.in/go-playground/webhooks.v5"
-  branch = "add-assignees-to-issues"
+  branch = "separate-issues-from-toplevel"
   source = "https://github.com/pieterlexis/webhooks"

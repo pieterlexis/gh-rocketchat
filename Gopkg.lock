@@ -37,12 +37,12 @@
   revision = "66b7b1311ac80bbafcd2daeef9a5e6e2cd1e2399"
 
 [[projects]]
-  branch = "add-assignees-to-issues"
-  digest = "1:526a06739900fef9492fba9a4d66702d6e9cd22ee62b128ea23b934da29a9567"
+  branch = "separate-issues-from-toplevel"
+  digest = "1:88b8a8e464aaaa54b73fb249884ded3e2452ba7f97976a189e3f96478e1f3ee8"
   name = "gopkg.in/go-playground/webhooks.v5"
   packages = ["github"]
   pruneopts = "UT"
-  revision = "2dbe987740fa53b394fdbd4e85c989c30705cbae"
+  revision = "912e1d50a1a104b2d349649550a7513443cb6895"
   source = "https://github.com/pieterlexis/webhooks"
 
 [[projects]]
