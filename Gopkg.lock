@@ -23,26 +23,27 @@
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
   pruneopts = "UT"
-  revision = "4d3f4d9ffa16a13f451c3b2999e9c49e9750bf06"
+  revision = "3d3f9f413869b949e48070b5bc593aa22cc2b8f2"
 
 [[projects]]
   branch = "master"
-  digest = "1:417d27a82efb8473554234a282be33d23b0d6adc121e636b55950f913ac071d6"
+  digest = "1:6a875550c3b582f6c2d7e2ce44aba792511f00016d7c46b0a4fb26f730ef3058"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = "UT"
-  revision = "9b800f95dbbc54abff0acf7ee32d88ba4e328c89"
+  revision = "66b7b1311ac80bbafcd2daeef9a5e6e2cd1e2399"
 
 [[projects]]
-  digest = "1:717ae725b36550a31f5060b4b549063b8a9cc72e55119ea051b59db6101f490b"
+  branch = "add-assignees-to-issues"
+  digest = "1:526a06739900fef9492fba9a4d66702d6e9cd22ee62b128ea23b934da29a9567"
   name = "gopkg.in/go-playground/webhooks.v5"
   packages = ["github"]
   pruneopts = "UT"
-  revision = "dfc330f6eb49e2cf5b18ca40df7229a83f36e137"
-  version = "v5.2.0"
+  revision = "2dbe987740fa53b394fdbd4e85c989c30705cbae"
+  source = "https://github.com/pieterlexis/webhooks"
 
 [[projects]]
   digest = "1:342378ac4dcb378a5448dd723f0784ae519383532f5e70ade24132c4c8693202"

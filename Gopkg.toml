@@ -36,3 +36,8 @@
 [[constraint]]
   name = "gopkg.in/yaml.v2"
   version = "2.2.1"
+
+[[constraint]]
+  name = "gopkg.in/go-playground/webhooks.v5"
+  branch = "add-assignees-to-issues"
+  source = "https://github.com/pieterlexis/webhooks"
