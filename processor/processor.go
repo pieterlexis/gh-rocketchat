@@ -42,6 +42,8 @@ func (p *processor) run() {
 				p.handlePing(payload.(github.PingPayload))
 			case github.PullRequestPayload:
 				p.handlePullRequest(payload.(github.PullRequestPayload))
+			case github.IssuesPayload:
+				p.handleIssue(payload.(github.IssuesPayload))
 			case github.PushPayload:
 				p.handlePush(payload.(github.PushPayload))
 			default:

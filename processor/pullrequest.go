@@ -15,37 +15,21 @@ import (
 
 const prGenericTemplate = `[{{ .Sender.Login }}]({{ .Sender.HTMLURL }}) {{ .Action }} pull request`
 const prClosedTemplate = `[{{ .Sender.Login }}]({{ .Sender.HTMLURL }}) {{ if .PullRequest.Merged }}merged{{ else }}closed{{ end }} pull request`
-const prAssignedTemplate = `[{{ .Sender.Login }}]({{ .Sender.HTMLURL }})
-{{- if not .PullRequest.Assignees }}
-	{{- " unassigned all from" }}
-{{- else }}
-	{{- " assigned " }}
-	{{- range $index, $assignee := .PullRequest.Assignees }}
-		{{- if $index }}, {{ end -}}
-		[{{ $assignee.Login }}]({{ $assignee.HTMLURL }})
-	{{- end }} to
-{{- end }} pull request`
+const prAssignedTemplate = `[{{ .Sender.Login }}]({{ .Sender.HTMLURL }}) {{ .Action }} [{{ .Assignee.Login }}]({{ .Assignee.HTMLURL }}) {{ if .Action eq "assigned" }}to{{ else }}from{{ end }} pull request`
 const prLabelTemplate = `[{{ .Sender.Login }}]({{ .Sender.HTMLURL }})
 {{- if eq .Action "labeled" }}
-	{{- " added a label to" }}
+	{{- " added " }}
 {{- else }}
-	{{ " removed a label from" }}
-{{- end }} pull request.
-{{- if .PullRequest.Labels }}
-	{{ "All labels: " }}
-	{{- range $index, $label := .PullRequest.Labels }}
-		{{- if $index }}, {{ end -}}
-		{{ $label.Name }}
-	{{- end }}
-{{- end }}`
-const prReviewRequestTemplate = `[{{ .Sender.Login }}]({{ .Sender.HTMLURL }}){{ if eq .Action "review_requested" }} requested a review for {{ else }} removed a review request from {{ end }}pull request.
-{{- if .PullRequest.RequestedReviewers }}
-	{{ "Requested reviewers for this pull request: " }}
-	{{- range $index, $reviewer := .PullRequest.RequestedReviewers }}
-		{{- if $index }}, {{ end -}}
-		[{{ $reviewer.Login }}]({{ $reviewer.HTMLURL }})
-	{{- end }}
-{{- end }}`
+	{{ " removed " }}
+{{- end }}
+{{- "label " }}
+{{- .Label.Name }}
+{{- if eq .Action "labeled" }}
+{{- "to " }}
+{{- else }}
+{{ "from " }}
+{{- end }} pull request`
+const prReviewRequestTemplate = `[{{ .Sender.Login }}]({{ .Sender.HTMLURL }}){{ if eq .Action "review_requested" }} requested a review from {{ .PullRequest.RequestedReviewer }}{{ else }} removed the review request from {{ .PullRequest.RequestedReviewer }}{{ end }} for pull request.`
 
 const prNumberTitleTemplate = `#{{ .Number }} - {{ .PullRequest.Title }}`
 
@@ -100,6 +84,14 @@ func (p *processor) getPullRequestBody(pr github.PullRequestPayload) models.Rock
 	}
 }
 
+func (p *processor) getPullRequestMilestone(pr github.PullRequestPayload) models.RocketChatWebhookField {
+	milestone, _ := p.makeAndExecuteTemplate("issue-milestone", "[{{ .PullRequest.Milestone.Title }}]({{ .PullRequest.Milestone.HTMLURL }})", pr)
+	return models.RocketChatWebhookField{
+		Title: "milestone",
+		Value: milestone,
+	}
+}
+
 func (p *processor) makePullRequestAttachments(pr github.PullRequestPayload) ([]models.RocketChatWebhookAttachment, error) {
 	var attachments []models.RocketChatWebhookAttachment
 	var fields []models.RocketChatWebhookField
@@ -109,12 +101,21 @@ func (p *processor) makePullRequestAttachments(pr github.PullRequestPayload) ([]
 		return attachments, err
 	}
 
+	fields = append(fields, models.RocketChatWebhookField{
+		Title: "opened",
+		Value: pr.PullRequest.User.Login,
+	})
+
 	if len(pr.PullRequest.Labels) > 0 {
 		fields = append(fields, p.getLabels(pr))
 	}
 
 	if len(pr.PullRequest.Assignees) > 0 {
 		fields = append(fields, p.getAssignees(pr))
+	}
+
+	if pr.PullRequest.Milestone != nil {
+		fields = append(fields, p.getPullRequestMilestone(pr))
 	}
 
 	if len(pr.PullRequest.RequestedReviewers) > 0 {

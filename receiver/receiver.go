@@ -27,6 +27,7 @@ func NewReceiver(name string, secret string) (*receiver, error) {
 func (r *receiver) Handle(ghPayloadChan chan interface{}) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		ghPayload, err := r.hook.Parse(req,
+			github.IssuesEvent,
 			github.PingEvent,
 			github.PullRequestEvent,
 			github.IssueCommentEvent,
