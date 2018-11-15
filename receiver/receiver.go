@@ -29,13 +29,16 @@ func (r *receiver) Handle(ghPayloadChan chan interface{}) http.Handler {
 		ghPayload, err := r.hook.Parse(req,
 			github.PingEvent,
 			github.PullRequestEvent,
+			github.IssueCommentEvent,
 			github.PushEvent)
 
 		if err != nil {
 			if err == github.ErrEventNotFound {
-				log.Debugf("%s Got an event we don't process: %T", r.logPrefix, ghPayload)
 				return
 			}
+			log.Warnf("%s Could not parse hook: %s", r.logPrefix, err)
+			log.Tracef("%s Request content: %+v", r.logPrefix, req)
+			return
 		}
 
 		log.Debugf("%s Had event payload: %T", r.logPrefix, ghPayload)
